@@ -70,7 +70,7 @@ function initDBConnection() {
         // url will be in this format: https://username:password@xxxxxxxxx-bluemix.cloudant.com
         dbCredentials.url = "REPLACE ME";
     }
-
+    dbCredentials.url = "https://a3208691-9363-4063-af73-4030abf06b38-bluemix:d755012a31c0828c591d87fb62c1a19ea00b0075fa533ca72521682fc0a4a6ff@a3208691-9363-4063-af73-4030abf06b38-bluemix.cloudant.com"
     cloudant = require('cloudant')(dbCredentials.url);
 
     // check if DB exists if not create
@@ -368,7 +368,7 @@ app.get('/api/favorites', function(request, response) {
             } else {
 
                 body.rows.forEach(function(document) {
-
+                	console.log('test1233')
                     db.get(document.id, {
                         revs_info: true
                     }, function(err, doc) {
