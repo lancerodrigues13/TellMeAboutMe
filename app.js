@@ -70,7 +70,6 @@ function initDBConnection() {
         // url will be in this format: https://username:password@xxxxxxxxx-bluemix.cloudant.com
         dbCredentials.url = "REPLACE ME";
     }
-    dbCredentials.url = "https://a3208691-9363-4063-af73-4030abf06b38-bluemix:d755012a31c0828c591d87fb62c1a19ea00b0075fa533ca72521682fc0a4a6ff@a3208691-9363-4063-af73-4030abf06b38-bluemix.cloudant.com"
     cloudant = require('cloudant')(dbCredentials.url);
 
     // check if DB exists if not create
@@ -329,10 +328,23 @@ app.put('/api/favorites', function(request, response) {
     });
 });
 
+app.get('/api/provisioning', function(request, response) {
+	var eventExecutor = require('./eventexecutor.js');
+	eventExecutor.executeEvent(db, 'placeOrder', {"serviceList" : ["dvt", "dvt_1"], "payload" : {"customer" : {"customerId" : 1234}, "subscription":{"subscriptionId" :4567}}},
+			function(){
+			response.status(200);
+		    response.pipe(request);
+		    response.end();
+		    return;
+	});
+   
+});
+
 app.get('/api/favorites', function(request, response) {
 
     console.log("Get method invoked.. ")
-
+    var serviceReg = require('./serviceregistry.js');
+    serviceReg.getService(db, 'dvt');
     db = cloudant.use(dbCredentials.dbName);
     var docList = [];
     var i = 0;
@@ -368,8 +380,7 @@ app.get('/api/favorites', function(request, response) {
             } else {
 
                 body.rows.forEach(function(document) {
-                	console.log('test1233')
-                    db.get(document.id, {
+                	db.get(document.id, {
                         revs_info: true
                     }, function(err, doc) {
                         if (!err) {
